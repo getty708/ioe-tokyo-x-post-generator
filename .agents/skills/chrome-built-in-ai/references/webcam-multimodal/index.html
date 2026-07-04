@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realtime Webcam Multimodal Demo (Chrome Built-in AI)</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --border: rgba(255, 255, 255, 0.08);
+      --primary: #f43f5e;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    header a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    header a:hover {
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+
+    .video-container {
+      width: 100%;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      position: relative;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .log-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 120px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+
+    .screenshot-preview {
+      width: 120px;
+      height: 90px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      background-size: cover;
+      background-position: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Webcam Multimodal Stream Analyzer</h1>
+    <a href="../demo-dashboard/index.html">← Back to Dashboard</a>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <!-- Camera Feed -->
+      <section class="card">
+        <h2>📷 Live Webcam Stream</h2>
+        <div class="video-container">
+          <video id="webcam-feed" autoplay playsinline></video>
+        </div>
+        <div style="display:flex; gap:1rem;">
+          <button id="btn-start-cam">Start Camera</button>
+          <button id="btn-analyze-frame" disabled>Analyze Current Frame</button>
+        </div>
+        <div class="screenshot-preview" id="frame-preview"></div>
+      </section>
+
+      <!-- AI output -->
+      <section class="card">
+        <h2>🧠 AI Visual Description (Gemini Nano)</h2>
+        <div style="margin-bottom:1rem;">
+          <label style="display:block; margin-bottom:0.5rem; color:var(--text-muted);">Custom Prompt Instructions:</label>
+          <input type="text" id="multimodal-prompt" value="Describe what you see in this image in detail. What are the key objects and colors?" style="width:100%; box-sizing:border-box; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:6px; color:#fff; padding:0.5rem 0.75rem;">
+        </div>
+        <div class="log-box" id="analysis-output">Awaiting analysis trigger...</div>
+      </section>
+    </div>
+
+    <!-- Hidden elements for frame extraction -->
+    <canvas id="canvas-extract" style="display:none;"></canvas>
+  </div>
+
+  <script type="module" src="webcam.js"></script>
+</body>
+</html>

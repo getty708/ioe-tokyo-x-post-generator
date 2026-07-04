@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Built-in AI Companion Template",
+  "version": "1.0",
+  "description": "Template Chrome Extension showing background Service Worker and Side Panel integrations with Prompt API.",
+  "permissions": [
+    "sidePanel",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Open AI Companion"
+  }
+}

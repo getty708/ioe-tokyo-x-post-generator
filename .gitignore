@@ -412,3 +412,12 @@ $RECYCLE.BIN/
 
 # Firebase
 .firebase/
+
+# Ignore downloaded reference subdirectories under the skill
+.agents/skills/chrome-built-in-ai/references/*/
+# But do not ignore files directly under references/ (like the .js files and README.md)
+!.agents/skills/chrome-built-in-ai/references/*.js
+!.agents/skills/chrome-built-in-ai/references/*.sh
+!.agents/skills/chrome-built-in-ai/references/README.md
+# Keep custom local implementations tracked
+!.agents/skills/chrome-built-in-ai/references/webcam-multimodal/

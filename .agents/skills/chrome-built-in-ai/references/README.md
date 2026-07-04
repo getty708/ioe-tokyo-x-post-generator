@@ -23,9 +23,39 @@ Each file contains structured headers with original URLs, license info, and patt
 
 ---
 
-## 2. Running the Demonstrations
+## 2. Setting Up References (Local Setup)
 
-You can launch and test all the HTML demonstration apps locally.
+The sample directories (`demo-dashboard/`, `zero-knowledge-pitch-builder/`, `insite-pagebot/`, `webcam-multimodal/`, `chrome-extension/`, `builtin-ai-api-status/`) are gitignored to keep the project repository clean of third-party copyrighted work.
+
+To clone and download the complete original repositories for local reference, run the download script from the project root:
+
+```bash
+chmod +x .agents/skills/chrome-built-in-ai/references/download-references.sh
+.agents/skills/chrome-built-in-ai/references/download-references.sh
+```
+
+Once downloaded, the subdirectories will be populated with the original repositories. The key files to reference in each project are:
+
+*   **zero-knowledge-pitch-builder**:
+    *   [index.html](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/zero-knowledge-pitch-builder/index.html) - Main user interface.
+    *   [main.js](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/zero-knowledge-pitch-builder/main.js) - Prompt execution and session orchestration.
+*   **builtin-ai-api-status**:
+    *   [index.html](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/builtin-ai-api-status/index.html) - API capability status dashboard.
+    *   [main.js](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/builtin-ai-api-status/main.js) - Parallel API loading and download progress checks.
+*   **demo-dashboard**:
+    *   [summarization/index.html](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/demo-dashboard/summarization/index.html) - Summarization API interactive playground.
+    *   [translation/index.html](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/demo-dashboard/translation/index.html) - Translator API interface.
+*   **insite-pagebot**:
+    *   [pagebot.js](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/insite-pagebot/pagebot.js) - Chatbot and content extraction logic.
+*   **chrome-extension**:
+    *   [manifest.json](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/chrome-extension/manifest.json) - Extension configuration.
+    *   [background.js](file:///Users/yoshimura708/code708/gdg/x-gen/.agents/skills/chrome-built-in-ai/references/chrome-extension/background.js) - Offscreen prompt API calls.
+
+---
+
+## 3. Running the Demonstrations
+
+After downloading, you can launch and test all the HTML demonstration apps locally.
 
 ### Start a Dev Server
 

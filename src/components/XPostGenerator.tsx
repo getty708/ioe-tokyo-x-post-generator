@@ -22,7 +22,6 @@ export const XPostGenerator: React.FC = () => {
     situation: 'session',
     feelingAndNotes: '',
     personality: 'engineer_logical',
-    techTopic: '',
     includeMeta: true
   });
 
@@ -168,213 +167,201 @@ export const XPostGenerator: React.FC = () => {
           {/* Left Column: User Input Panel (6 cols on lg) */}
           <div className="lg:col-span-6 space-y-6">
             
-            {/* Session Info Input Card */}
-            <div className="p-6 bg-white border-thick rounded-xl shadow-neo space-y-4">
+            {/* Session Info Input Section */}
+            <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-[8px] h-[28px] bg-google-blue rounded-sm"></div>
                 <h2 className="text-lg md:text-xl font-display font-bold text-ink">聴講中のセッション情報</h2>
               </div>
               
-              <div className="space-y-3">
-                <div>
-                  <label htmlFor="session-title" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">セッション名</label>
-                  <input
-                    id="session-title"
-                    type="text"
-                    value={session.title}
-                    onChange={e => setSession({ ...session, title: e.target.value })}
-                    placeholder="セッションのタイトルを入力..."
-                    className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none focus:bg-pastel-blue/20 transition font-body"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="session-speaker" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">登壇者 (スピーカー)</label>
-                  <input
-                    id="session-speaker"
-                    type="text"
-                    value={session.speaker}
-                    onChange={e => setSession({ ...session, speaker: e.target.value })}
-                    placeholder="スピーカー名を入力..."
-                    className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none focus:bg-pastel-blue/20 transition font-body"
-                  />
-                </div>
+              <div className="p-6 bg-white border-thick rounded-xl shadow-neo space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <label htmlFor="session-title" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">セッション名</label>
+                    <input
+                      id="session-title"
+                      type="text"
+                      value={session.title}
+                      onChange={e => setSession({ ...session, title: e.target.value })}
+                      placeholder="セッションのタイトルを入力..."
+                      className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none focus:bg-pastel-blue/20 transition font-body"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="session-speaker" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">登壇者 (スピーカー)</label>
+                    <input
+                      id="session-speaker"
+                      type="text"
+                      value={session.speaker}
+                      onChange={e => setSession({ ...session, speaker: e.target.value })}
+                      placeholder="スピーカー名を入力..."
+                      className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none focus:bg-pastel-blue/20 transition font-body"
+                    />
+                  </div>
 
-                <div>
-                  <label htmlFor="session-desc" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">セッション概要</label>
-                  <textarea
-                    id="session-desc"
-                    value={session.description}
-                    onChange={e => setSession({ ...session, description: e.target.value })}
-                    placeholder="セッションの概要やポイントを入力..."
-                    className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none focus:bg-pastel-blue/20 transition h-20 resize-none font-body"
-                  />
+                  <div>
+                    <label htmlFor="session-desc" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">セッション概要</label>
+                    <textarea
+                      id="session-desc"
+                      value={session.description}
+                      onChange={e => setSession({ ...session, description: e.target.value })}
+                      placeholder="セッションの概要やポイントを入力..."
+                      className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none focus:bg-pastel-blue/20 transition h-20 resize-none font-body"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Post Config Card */}
-            <div className="p-6 bg-white border-thick rounded-xl shadow-neo space-y-6">
+            {/* AI Input Section */}
+            <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-[8px] h-[28px] bg-google-yellow rounded-sm"></div>
                 <h2 className="text-lg md:text-xl font-display font-bold text-ink">AI へのインプット</h2>
               </div>
 
-              {/* Situation */}
-              <div>
-                <label className="block text-sm font-display font-bold text-ink mb-2">今のタイミングは？ ⚡</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { id: 'pre_event', label: '🎟️ 参加表明' },
-                    { id: 'attendance', label: '📍 会場到着' },
-                    { id: 'session', label: '💡 実況' },
-                    { id: 'review', label: '📝 振り返り' }
-                  ].map(item => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleSituationChange(item.id as any)}
-                      className={`py-2 px-0.5 text-[11px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
-                        inputs.situation === item.id 
-                          ? 'bg-google-blue text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
-                          : 'bg-white text-ink border-ink hover:bg-pastel-blue shadow-[2px_2px_0px_0px_#1E1E1E] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+              <div className="p-6 bg-white border-thick rounded-xl shadow-neo space-y-6">
+                {/* Situation */}
+                <div>
+                  <label className="block text-sm font-display font-bold text-ink mb-2">今のタイミングは？ ⚡</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { id: 'pre_event', label: '🎟️ 参加表明' },
+                      { id: 'attendance', label: '📍 会場到着' },
+                      { id: 'session', label: '💡 実況' },
+                      { id: 'review', label: '📝 振り返り' }
+                    ].map(item => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => handleSituationChange(item.id as any)}
+                        className={`py-2 px-0.5 text-[11px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
+                          inputs.situation === item.id 
+                            ? 'bg-google-blue text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
+                            : 'bg-white text-ink border-ink hover:bg-pastel-blue shadow-[2px_2px_0px_0px_#1E1E1E] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Textarea & Tags */}
-              <div>
-                <label className="block text-sm font-display font-bold text-ink mb-2">感想メモ（自由入力） ✍️</label>
-                <textarea
-                  value={inputs.feelingAndNotes}
-                  onChange={e => setInputs({ ...inputs, feelingAndNotes: e.target.value })}
-                  placeholder="例: Web Worker制限の話が刺さった！並列処理気をつけよう..."
-                  className="w-full p-3 text-sm border-2 border-ink rounded-lg focus:bg-pastel-blue/20 outline-none h-24 resize-none transition shadow-[inset_2px_2px_4px_rgba(0,0,0,0.05)]"
-                />
-                <div className="mt-2">
-                  <QuickTags 
-                    situation={inputs.situation} 
-                    onSelectTag={(text) => setInputs({ ...inputs, feelingAndNotes: inputs.feelingAndNotes + text })} 
+                {/* Textarea & Tags */}
+                <div>
+                  <label className="block text-sm font-display font-bold text-ink mb-2">感想メモ（自由入力） ✍️</label>
+                  <textarea
+                    value={inputs.feelingAndNotes}
+                    onChange={e => setInputs({ ...inputs, feelingAndNotes: e.target.value })}
+                    placeholder="例: Web Worker制限の話が刺さった！並列処理気をつけよう..."
+                    className="w-full p-3 text-sm border-2 border-ink rounded-lg focus:bg-pastel-blue/20 outline-none h-24 resize-none transition shadow-[inset_2px_2px_4px_rgba(0,0,0,0.05)]"
                   />
-                </div>
-              </div>
-
-              {/* Technology Topic */}
-              <div>
-                <label htmlFor="tech-topic" className="block text-sm font-display font-bold text-ink mb-2">注目している技術トピック（ハルシネーション防止） 🤖</label>
-                <select
-                  id="tech-topic"
-                  value={inputs.techTopic}
-                  onChange={e => setInputs({ ...inputs, techTopic: e.target.value })}
-                  className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none bg-white focus:bg-pastel-blue/20 transition font-body cursor-pointer"
-                >
-                  <option value="">選択しない（自動推測）</option>
-                  <option value="Chrome Built-in AI / Gemini Nano / WebMCP">Chrome Built-in AI / Gemini Nano / WebMCP (On-Device AI)</option>
-                  <option value="Gemini 3.5 Flash / Gemini Omni / Firebase Genkit 2.0">Gemini 3.5 Flash / Gemini Omni / Firebase Genkit 2.0 (AI Models & Frameworks)</option>
-                  <option value="Google Antigravity 2.0 / Android CLI / Managed Agents">Google Antigravity 2.0 / Android CLI / Managed Agents (Developer Tools)</option>
-                </select>
-              </div>
-
-              {/* Personality */}
-              <div>
-                <label className="block text-sm font-display font-bold text-ink mb-2">ポストの「人格」を選ぶ 🎭</label>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {[
-                    { id: 'engineer_logical', label: '💻 ｴﾝｼﾞﾆｱ(要約)', color: 'hover:bg-pastel-blue' },
-                    { id: 'engineer_passion', label: '💡 ｴﾝｼﾞﾆｱ(熱量)', color: 'hover:bg-pastel-blue' },
-                    { id: 'gal', label: '🌺 ギャル', color: 'hover:bg-pastel-red' },
-                    { id: 'hotblooded', label: '🔥 熱血', color: 'hover:bg-pastel-yellow' },
-                    { id: 'kansai', label: '🐙 関西弁', color: 'hover:bg-pastel-green' }
-                  ].map(item => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setInputs({ ...inputs, personality: item.id as any })}
-                      className={`py-2 px-0.5 text-[10px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
-                        inputs.personality === item.id 
-                          ? 'bg-ink text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
-                          : `bg-white text-ink border-ink shadow-[2px_2px_0px_0px_#1E1E1E] ${item.color} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0`
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Include Meta Tag */}
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  id="include-meta"
-                  type="checkbox"
-                  checked={inputs.includeMeta}
-                  onChange={e => setInputs({ ...inputs, includeMeta: e.target.checked })}
-                  className="w-4 h-4 text-google-blue border-2 border-ink rounded focus:ring-google-blue cursor-pointer"
-                />
-                <label htmlFor="include-meta" className="text-xs md:text-sm font-display font-bold text-ink cursor-pointer select-none">
-                  末尾に WebAI メタ情報ハッシュタグ（#GeminiNano）を含める
-                </label>
-              </div>
-
-              {/* Generation Options */}
-              <div className="border-t border-ink/10 pt-4 space-y-4 font-body">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  
-                  {/* Draft Count Selector */}
-                  <div className="flex-1">
-                    <label className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">生成件数: {draftCount}件</label>
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3, 4, 5].map(n => (
-                        <button
-                          key={n}
-                          type="button"
-                          onClick={() => setDraftCount(n)}
-                          className={`w-9 h-9 font-mono font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 flex items-center justify-center text-xs ${
-                            draftCount === n
-                              ? 'bg-ink text-white border-ink shadow-[1px_1px_0px_0px_#1E1E1E]'
-                              : 'bg-white text-ink border-ink hover:bg-pastel-blue shadow-[1px_1px_0px_0px_#1E1E1E] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0'
-                          }`}
-                        >
-                          {n}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Temperature Slider */}
-                  <div className="flex-1">
-                    <label htmlFor="temp-slider" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">ランダム性 (Temp): {temperature.toFixed(1)}</label>
-                    <input
-                      id="temp-slider"
-                      type="range"
-                      min="0.1"
-                      max="2.0"
-                      step="0.1"
-                      value={temperature}
-                      onChange={e => setTemperature(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-google-blue border border-ink/20"
+                  <div className="mt-2">
+                    <QuickTags 
+                      situation={inputs.situation} 
+                      onSelectTag={(text) => setInputs({ ...inputs, feelingAndNotes: inputs.feelingAndNotes + text })} 
                     />
-                    <div className="flex justify-between text-[10px] font-mono text-ink/40 mt-1">
-                      <span>堅実 (0.1)</span>
-                      <span>創造的 (2.0)</span>
-                    </div>
                   </div>
-
                 </div>
-              </div>
 
-              {/* Trigger */}
-              <button
-                onClick={handleGenerate}
-                disabled={loading}
-                className="w-full py-4 bg-google-green text-white font-display font-bold text-base border-thick rounded-xl shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-neo-hover active:translate-x-0 active:translate-y-0 active:shadow-neo disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 cursor-pointer"
-              >
-                {loading ? '候補を順番に生成中... 🤖' : `Xポスト候補を${draftCount}件順番に生成 ✨`}
-              </button>
+                {/* Personality */}
+                <div>
+                  <label className="block text-sm font-display font-bold text-ink mb-2">ポストの「人格」を選ぶ 🎭</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: 'engineer_logical', label: '💻 ｴﾝｼﾞﾆｱ(要約)', color: 'hover:bg-pastel-blue' },
+                      { id: 'engineer_passion', label: '💡 ｴﾝｼﾞﾆｱ(熱量)', color: 'hover:bg-pastel-blue' },
+                      { id: 'gal', label: '🌺 ギャル', color: 'hover:bg-pastel-red' },
+                      { id: 'hotblooded', label: '🔥 熱血', color: 'hover:bg-pastel-yellow' },
+                      { id: 'kansai', label: '🐙 関西弁', color: 'hover:bg-pastel-green' }
+                    ].map(item => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setInputs({ ...inputs, personality: item.id as any })}
+                        className={`py-2 px-0.5 text-[10px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
+                          inputs.personality === item.id 
+                            ? 'bg-ink text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
+                            : `bg-white text-ink border-ink shadow-[2px_2px_0px_0px_#1E1E1E] ${item.color} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0`
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Include Meta Tag */}
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    id="include-meta"
+                    type="checkbox"
+                    checked={inputs.includeMeta}
+                    onChange={e => setInputs({ ...inputs, includeMeta: e.target.checked })}
+                    className="w-4 h-4 text-google-blue border-2 border-ink rounded focus:ring-google-blue cursor-pointer"
+                  />
+                  <label htmlFor="include-meta" className="text-xs md:text-sm font-display font-bold text-ink cursor-pointer select-none">
+                    末尾に WebAI メタ情報ハッシュタグ（#GeminiNano）を含める
+                  </label>
+                </div>
+
+                {/* Generation Options */}
+                <div className="border-t border-ink/10 pt-4 space-y-4 font-body">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    
+                    {/* Draft Count Selector */}
+                    <div className="flex-1">
+                      <label className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">生成件数: {draftCount}件</label>
+                      <div className="flex gap-1.5">
+                        {[1, 2, 3, 4, 5].map(n => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => setDraftCount(n)}
+                            className={`w-9 h-9 font-mono font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 flex items-center justify-center text-xs ${
+                              draftCount === n
+                                ? 'bg-ink text-white border-ink shadow-[1px_1px_0px_0px_#1E1E1E]'
+                                : 'bg-white text-ink border-ink hover:bg-pastel-blue shadow-[1px_1px_0px_0px_#1E1E1E] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0'
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Temperature Slider */}
+                    <div className="flex-1">
+                      <label htmlFor="temp-slider" className="block text-xs font-mono font-bold text-ink/70 mb-1 uppercase">ランダム性 (Temp): {temperature.toFixed(1)}</label>
+                      <input
+                        id="temp-slider"
+                        type="range"
+                        min="0.1"
+                        max="2.0"
+                        step="0.1"
+                        value={temperature}
+                        onChange={e => setTemperature(parseFloat(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-google-blue border border-ink/20"
+                      />
+                      <div className="flex justify-between text-[10px] font-mono text-ink/40 mt-1">
+                        <span>堅実 (0.1)</span>
+                        <span>創造的 (2.0)</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Trigger */}
+                <button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="w-full py-4 bg-google-green text-white font-display font-bold text-base border-thick rounded-xl shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-neo-hover active:translate-x-0 active:translate-y-0 active:shadow-neo disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 cursor-pointer"
+                >
+                  {loading ? '候補を順番に生成中... 🤖' : `Xポスト候補を${draftCount}件順番に生成 ✨`}
+                </button>
+              </div>
             </div>
           </div>
           

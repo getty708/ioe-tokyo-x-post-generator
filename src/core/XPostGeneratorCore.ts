@@ -170,8 +170,6 @@ export class XPostGeneratorCore {
     ];
     const style = styleModifiers[index % styleModifiers.length];
 
-    const topicPrompt = inputs.techTopic ? `\n【注目技術トピック】: ${inputs.techTopic} (このトピックを自然に投稿に含めてください)` : '';
-
     const context = `
       あなたは技術カンファレンス「I/O Extended Tokyo 2026」の参加者です。
       提供された情報をもとに、X（旧Twitter）向けの日本語の投稿本文を作成してください。
@@ -209,7 +207,6 @@ export class XPostGeneratorCore {
       セッション名: ${session.title}
       スピーカー: ${session.speaker}
       概要: ${session.description || ''}
-      ${topicPrompt}
 
       【ユーザーのリアルな感想メモ】
       ${inputs.feelingAndNotes || '(特になし。セッション情報とトーン指示から自動推測して作成してください)'}

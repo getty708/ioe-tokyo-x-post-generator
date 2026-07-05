@@ -9,7 +9,6 @@ export interface UserInputs {
   situation: 'pre_event' | 'attendance' | 'session' | 'review';
   feelingAndNotes: string;
   personality: 'engineer_logical' | 'engineer_passion' | 'gal' | 'hotblooded' | 'kansai';
-  techTopic: string;
   includeMeta: boolean;
 }
 

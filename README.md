@@ -50,3 +50,24 @@ To preview the production build locally:
 npm run preview
 ```
 
+## URL Parameter Setup (GET Parameters)
+
+You can pre-populate the "Session Info" section by appending query parameters to the URL. This allows other websites (like the official landing page) to link directly to this app with the relevant session already selected and filled.
+
+### Query Parameters
+
+| Parameter | Description | Default Fallback Value |
+| :--- | :--- | :--- |
+| `title` | The name/title of the session | `I/O Extended Tokyo 2026` |
+| `speaker` | The name(s) of the speaker(s) | `Google Developer Expert (GDE)` |
+| `description`| A brief description/summary of the session | `Google I/O 2026のリキャップイベント` |
+
+### Example URL
+
+```
+https://ioe-tokyo-2026-x-gen.web.app/?title=Session%20Title&speaker=Speaker%20Name&description=Session%20Summary
+```
+
+Values should be properly URL-encoded (e.g., using `encodeURIComponent()` in JavaScript) to ensure special characters and spaces are resolved correctly.
+
+

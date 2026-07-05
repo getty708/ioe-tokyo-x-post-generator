@@ -13,9 +13,9 @@ export const XPostGenerator: React.FC = () => {
   
   const [session, setSession] = useState<SessionInfo>({
     id: 'custom',
-    title: 'Chrome Built-in AIでつくる次世代Webアプリ of UX設計と実践',
-    speaker: 'GDG Tokyo Dev',
-    description: 'Gemini NanoをWebブラウザ上で動作させ、サーバーコストをゼロにしながら極上のプライバシーUXを提供する手法を解説します。'
+    title: 'I/O Extended Tokyo 2026',
+    speaker: 'Google Developer Expert (GDE)',
+    description: 'Google I/O 2026のリキャップイベント'
   });
 
   const [inputs, setInputs] = useState<UserInputs>({
@@ -33,6 +33,23 @@ export const XPostGenerator: React.FC = () => {
   const [temperature, setTemperature] = useState<number>(0.8);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Initialize from URL parameters or fall back to defaults
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get('title');
+    const speaker = params.get('speaker');
+    const description = params.get('description');
+
+    if (title || speaker || description) {
+      setSession(prev => ({
+        ...prev,
+        title: title || 'I/O Extended Tokyo 2026',
+        speaker: speaker || 'Google Developer Expert (GDE)',
+        description: description || 'Google I/O 2026のリキャップイベント'
+      }));
+    }
+  }, []);
 
   // Initialize AI check
   useEffect(() => {

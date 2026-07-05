@@ -1,23 +1,46 @@
 import React from 'react';
 
 interface QuickTagsProps {
+  situation: 'pre_event' | 'attendance' | 'session' | 'review';
   onSelectTag: (tagText: string) => void;
 }
 
-const TAGS = [
-  { label: '🔥 神セッション', text: '神セッションすぎる！' },
-  { label: '🧠 完全に理解した', text: '完全に理解した。' },
-  { label: '💻 明日から試す', text: '明日から早速プロダクトに導入して試す！' },
-  { label: '🎯 ここが刺さった', text: '制約の話がリアルで一番刺さった。' },
-  { label: '🚀 未来来てる', text: '完全に未来が来てるのを感じる。' }
-];
+const TAGS_MAP = {
+  pre_event: [
+    { label: '🎟️ 渋谷枠確保！', text: '渋谷会場の現地参加枠を確保！' },
+    { label: '🤖 WebMCP気になる', text: 'WebMCPのセッションがめちゃくちゃ気になる。' },
+    { label: '🚀 刺激をもらう', text: '最先端のWeb技術に触れて刺激をもらうぞ！' },
+    { label: '📈 キャッチアップ', text: 'Google I/O 2026の最新アップデートをキャッチアップする！' }
+  ],
+  attendance: [
+    { label: '📍 渋谷到着！', text: 'Google渋谷オフィスに到着！会場の熱気がすごい。' },
+    { label: '🧥 冷房対策ヨシ！', text: '会場内の冷房対策で上着は必須だな。' },
+    { label: '🎁 スワッグ最高', text: '限定スワッグがデザイン良すぎてテンション上がる！' },
+    { label: '🥐 朝食チャージ', text: '朝食もしっかり食べて現地参戦！' }
+  ],
+  session: [
+    { label: '🔥 神セッション', text: '神セッションすぎる！' },
+    { label: '🧠 完全に理解した', text: '完全に理解した。' },
+    { label: '🤔 何もわからない', text: '何もわからない（深淵をのぞき込んだ気持ち）。' },
+    { label: '🚀 明日から即マージ', text: '明日から即プロダクションにマージしたい！' },
+    { label: '💬 Ask Speaker行く', text: 'セッション後、速攻でスピーカーブースに質問に行く！' }
+  ],
+  review: [
+    { label: '📝 Zenn書くぞ', text: '今日の学びをZennにまとめてアウトプットする！' },
+    { label: '💻 即コードに落とす', text: '学んだことを忘れないうちにローカルでコードに落とし込む！' },
+    { label: '🚀 最高のイベント', text: '最高のイベントだった。運営の皆様ありがとうございました！' },
+    { label: '📈 モチベ爆上がり', text: '開発モチベーションが爆上がりした一日だった。' }
+  ]
+};
 
-export const QuickTags: React.FC<QuickTagsProps> = ({ onSelectTag }) => {
+export const QuickTags: React.FC<QuickTagsProps> = ({ situation, onSelectTag }) => {
+  const currentTags = TAGS_MAP[situation] || [];
+
   return (
     <div className="mb-4 font-body">
       <label className="block text-xs font-mono font-bold text-ink/60 uppercase tracking-wider mb-2">ワンタップで感想を追加 ⚡</label>
       <div className="flex flex-wrap gap-2">
-        {TAGS.map(tag => (
+        {currentTags.map(tag => (
           <button
             key={tag.label}
             type="button"

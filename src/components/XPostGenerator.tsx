@@ -13,15 +13,17 @@ export const XPostGenerator: React.FC = () => {
   
   const [session, setSession] = useState<SessionInfo>({
     id: 'custom',
-    title: 'Chrome Built-in AIでつくる次世代WebアプリのUX設計と実践',
+    title: 'Chrome Built-in AIでつくる次世代Webアプリ of UX設計と実践',
     speaker: 'GDG Tokyo Dev',
     description: 'Gemini NanoをWebブラウザ上で動作させ、サーバーコストをゼロにしながら極上のプライバシーUXを提供する手法を解説します。'
   });
 
   const [inputs, setInputs] = useState<UserInputs>({
-    situation: 'learned',
+    situation: 'session',
     feelingAndNotes: '',
-    personality: 'gal'
+    personality: 'engineer_logical',
+    techTopic: '',
+    includeMeta: true
   });
 
   const [candidates, setCandidates] = useState<string[]>([]);
@@ -30,6 +32,8 @@ export const XPostGenerator: React.FC = () => {
   const [editModes, setEditModes] = useState<boolean[]>([false, false, false]);
   const [draftCount, setDraftCount] = useState<number>(3);
   const [temperature, setTemperature] = useState<number>(0.8);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Initialize AI check
   useEffect(() => {
@@ -115,12 +119,53 @@ export const XPostGenerator: React.FC = () => {
     }
   };
 
+  const triggerToast = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const handleSituationChange = (sit: UserInputs['situation']) => {
+    let nextPersonality = inputs.personality;
+    if (sit === 'pre_event' || sit === 'attendance') {
+      nextPersonality = 'engineer_passion';
+    } else if (sit === 'session' || sit === 'review') {
+      nextPersonality = 'engineer_logical';
+    }
+    setInputs({
+      ...inputs,
+      situation: sit,
+      personality: nextPersonality
+    });
+  };
+
+  const copyThreadUrl = async () => {
+    const threadText = `このポストはChrome内蔵AIで投稿原稿を作る「X Post Generator」を使用しました！\n詳細はこちら: https://ioe-tokyo-2026.web.app/`;
+    try {
+      await navigator.clipboard.writeText(threadText);
+      triggerToast("スレッド用URLをクリップボードにコピーしました！投稿のリプライ欄に貼ってね 🔗");
+    } catch (err) {
+      console.error(err);
+      alert("コピーに失敗しました。ブラウザのアクセス許可を確認してください。");
+    }
+  };
+
+  const handlePostClick = async () => {
+    const threadText = `このポストはChrome内蔵AIで投稿原稿を作る「X Post Generator」を使用しました！\n詳細はこちら: https://ioe-tokyo-2026.web.app/`;
+    try {
+      await navigator.clipboard.writeText(threadText);
+      triggerToast("投稿画面を開きました！リプライ用に紹介URLもコピーしました 🔗");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 my-4 font-body bg-transparent">
       <StatusGuard models={models} onStartDownload={handleStartDownload}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: User Input Panel (7 cols on lg) */}
+          {/* Left Column: User Input Panel (6 cols on lg) */}
           <div className="lg:col-span-6 space-y-6">
             
             {/* Session Info Input Card */}
@@ -178,17 +223,18 @@ export const XPostGenerator: React.FC = () => {
               {/* Situation */}
               <div>
                 <label className="block text-sm font-display font-bold text-ink mb-2">今のタイミングは？ ⚡</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { id: 'opening', label: '🎉 開始' },
-                    { id: 'learned', label: '💡 学び' },
-                    { id: 'closing', label: '🏁 終了' }
+                    { id: 'pre_event', label: '🎟️ 参加表明' },
+                    { id: 'attendance', label: '📍 会場到着' },
+                    { id: 'session', label: '💡 実況' },
+                    { id: 'review', label: '📝 振り返り' }
                   ].map(item => (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setInputs({ ...inputs, situation: item.id as any })}
-                      className={`py-2 px-1 text-xs md:text-sm font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
+                      onClick={() => handleSituationChange(item.id as any)}
+                      className={`py-2 px-0.5 text-[11px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
                         inputs.situation === item.id 
                           ? 'bg-google-blue text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
                           : 'bg-white text-ink border-ink hover:bg-pastel-blue shadow-[2px_2px_0px_0px_#1E1E1E] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0'
@@ -210,16 +256,36 @@ export const XPostGenerator: React.FC = () => {
                   className="w-full p-3 text-sm border-2 border-ink rounded-lg focus:bg-pastel-blue/20 outline-none h-24 resize-none transition shadow-[inset_2px_2px_4px_rgba(0,0,0,0.05)]"
                 />
                 <div className="mt-2">
-                  <QuickTags onSelectTag={(text) => setInputs({ ...inputs, feelingAndNotes: inputs.feelingAndNotes + text })} />
+                  <QuickTags 
+                    situation={inputs.situation} 
+                    onSelectTag={(text) => setInputs({ ...inputs, feelingAndNotes: inputs.feelingAndNotes + text })} 
+                  />
                 </div>
+              </div>
+
+              {/* Technology Topic */}
+              <div>
+                <label htmlFor="tech-topic" className="block text-sm font-display font-bold text-ink mb-2">注目している技術トピック（ハルシネーション防止） 🤖</label>
+                <select
+                  id="tech-topic"
+                  value={inputs.techTopic}
+                  onChange={e => setInputs({ ...inputs, techTopic: e.target.value })}
+                  className="w-full p-3 text-sm border-2 border-ink rounded-lg outline-none bg-white focus:bg-pastel-blue/20 transition font-body cursor-pointer"
+                >
+                  <option value="">選択しない（自動推測）</option>
+                  <option value="Chrome Built-in AI / Gemini Nano / WebMCP">Chrome Built-in AI / Gemini Nano / WebMCP (On-Device AI)</option>
+                  <option value="Gemini 3.5 Flash / Gemini Omni / Firebase Genkit 2.0">Gemini 3.5 Flash / Gemini Omni / Firebase Genkit 2.0 (AI Models & Frameworks)</option>
+                  <option value="Google Antigravity 2.0 / Android CLI / Managed Agents">Google Antigravity 2.0 / Android CLI / Managed Agents (Developer Tools)</option>
+                </select>
               </div>
 
               {/* Personality */}
               <div>
                 <label className="block text-sm font-display font-bold text-ink mb-2">ポストの「人格」を選ぶ 🎭</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {[
-                    { id: 'engineer', label: '💻 ｴﾝｼﾞﾆｱ', color: 'hover:bg-pastel-blue' },
+                    { id: 'engineer_logical', label: '💻 ｴﾝｼﾞﾆｱ(要約)', color: 'hover:bg-pastel-blue' },
+                    { id: 'engineer_passion', label: '💡 ｴﾝｼﾞﾆｱ(熱量)', color: 'hover:bg-pastel-blue' },
                     { id: 'gal', label: '🌺 ギャル', color: 'hover:bg-pastel-red' },
                     { id: 'hotblooded', label: '🔥 熱血', color: 'hover:bg-pastel-yellow' },
                     { id: 'kansai', label: '🐙 関西弁', color: 'hover:bg-pastel-green' }
@@ -228,7 +294,7 @@ export const XPostGenerator: React.FC = () => {
                       key={item.id}
                       type="button"
                       onClick={() => setInputs({ ...inputs, personality: item.id as any })}
-                      className={`py-2 px-1 text-xs md:text-sm font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
+                      className={`py-2 px-0.5 text-[10px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
                         inputs.personality === item.id 
                           ? 'bg-ink text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
                           : `bg-white text-ink border-ink shadow-[2px_2px_0px_0px_#1E1E1E] ${item.color} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0`
@@ -238,6 +304,20 @@ export const XPostGenerator: React.FC = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Include Meta Tag */}
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  id="include-meta"
+                  type="checkbox"
+                  checked={inputs.includeMeta}
+                  onChange={e => setInputs({ ...inputs, includeMeta: e.target.checked })}
+                  className="w-4 h-4 text-google-blue border-2 border-ink rounded focus:ring-google-blue cursor-pointer"
+                />
+                <label htmlFor="include-meta" className="text-xs md:text-sm font-display font-bold text-ink cursor-pointer select-none">
+                  末尾に WebAI メタ情報ハッシュタグ（#GeminiNano）を含める
+                </label>
               </div>
 
               {/* Generation Options */}
@@ -403,6 +483,13 @@ export const XPostGenerator: React.FC = () => {
                              {editModes[idx] ? '決定 💾' : '編集 ✏️'}
                           </button>
 
+                          <button
+                            onClick={copyThreadUrl}
+                            className="px-3 py-1.5 text-xs font-display font-bold bg-white text-google-yellow border border-google-yellow rounded-lg transition shadow-[1px_1px_0px_0px_#fbbc05] cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#fbbc05] active:translate-x-0 active:translate-y-0 shrink-0 flex items-center gap-1"
+                          >
+                            <span>スレッドURL 📋</span>
+                          </button>
+
                           <a
                             href={XPostGeneratorCore.getXShareUrl(text)}
                             target="_blank"
@@ -412,7 +499,13 @@ export const XPostGenerator: React.FC = () => {
                                 ? 'bg-gray-100 text-gray-400 border border-gray-200 pointer-events-none' 
                                 : 'bg-[#1D9BF0] hover:bg-[#1A8CD8] text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0'
                             }`}
-                            onClick={(e) => isOver && e.preventDefault()}
+                            onClick={(e) => {
+                              if (isOver) {
+                                e.preventDefault();
+                              } else {
+                                handlePostClick();
+                              }
+                            }}
                           >
                             ポストする 🐦
                           </a>
@@ -463,6 +556,14 @@ export const XPostGenerator: React.FC = () => {
           
         </div>
       </StatusGuard>
+
+      {/* Copy notification Toast */}
+      {showToast && (
+        <div className="fixed bottom-5 right-5 z-50 bg-ink text-white border-2 border-white px-4 py-3 rounded-lg shadow-neo-hover font-bold text-xs flex items-center gap-2 animate-bounce">
+          <span>✨</span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 };

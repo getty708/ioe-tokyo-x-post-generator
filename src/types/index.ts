@@ -6,9 +6,11 @@ export interface SessionInfo {
 }
 
 export interface UserInputs {
-  situation: 'opening' | 'learned' | 'closing';
+  situation: 'pre_event' | 'attendance' | 'session' | 'review';
   feelingAndNotes: string;
-  personality: 'engineer' | 'gal' | 'hotblooded' | 'kansai';
+  personality: 'engineer_logical' | 'engineer_passion' | 'gal' | 'hotblooded' | 'kansai';
+  techTopic: string;
+  includeMeta: boolean;
 }
 
 export interface GeneratorStatus {

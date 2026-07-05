@@ -139,22 +139,26 @@ export class XPostGeneratorCore {
     if (availability.status === 'unsupported') throw new Error(availability.error);
 
     const personalityMap = {
-      engineer: '技術へのリスペクトが高く、知的で簡潔なエンジニアらしいトーン。専門用語は正確に。',
+      engineer_logical: '客観的事実に基づき、知的な表現で簡潔にまとめるロジック重視のエンジニアトーン。感情表現は抑えめで、学びや構成を簡潔に整理します。',
+      engineer_passion: '技術へのリスペクトと熱量を前面に出し、開発者コミュニティで好まれる技術用語やミーム（「完全に理解した」「何もわからない」「チョットデキル」「明日から即マージ」など）を交えた、フランクで熱気のあるトーン。',
       gal: '「〜じゃん」「〜すぎる」「マジで」などのギャル語尾を使い、最高にテンションが高いトーン。絵文字多め。',
       hotblooded: '「〜だ！」「熱すぎる！」「最高！」など、パッションと熱血漢溢れる感動MAX of MAXなトーン。',
       kansai: 'フランクで親しみやすい関西弁（〜やねん、〜やんか、など）で、ユーモアを交えたトーン。'
     };
 
     const situationMap = {
-      opening: '今まさにセッションが始まった高揚感、ワクワク感を伝える実況風の構成。短め推奨。',
-      learned: 'セッションから得られた具体的な気づきや「ここが勉強になった！」をシェアする構成。',
-      closing: 'セッション全体の総括と、登壇者への感謝、明日から実践したい決意を伝える構成。'
+      pre_event: 'イベント前の事前参加表明。渋谷会場への現地参加に対するワクワク感や、注目しているセッション、楽しみなトピックへの期待値をアピールする構成。',
+      attendance: 'イベント当日、会場（渋谷オフィスなど）に到着した瞬間の様子。会場の雰囲気、限定スワッグ（グッズ）獲得の喜びなど、リアルな感動を伝える構成。',
+      session: 'セッション中の気づき、驚き、技術的要点をリアルタイムに実況・要約する構成。速報性を重視。',
+      review: 'イベント全体の振り返り。学んだことの要点、今後の学習ロードマップ、ブログ執筆の意欲などを簡潔に整理した体系的な構成。'
     };
 
     // Calculate maximum body characters allowed dynamically
-    const baseSuffixLength = 27 + session.title.length;
-    // Set 5 characters buffer
-    const maxBodyLength = Math.max(30, 140 - (baseSuffixLength + 5));
+    // Suffix: "\n\n- [Session Title]\n#gdgtokyo #ioextended" とトグルのメタタグ
+    const baseSuffix = `\n\n- ${session.title}\n#gdgtokyo #ioextended`;
+    const metaSuffix = inputs.includeMeta ? ' #GeminiNano' : '';
+    const fullSuffix = baseSuffix + metaSuffix;
+    const maxBodyLength = Math.max(30, 140 - (fullSuffix.length + 5));
 
     // Slot-specific prompt modifiers to diverge generated contents
     const styleModifiers = [
@@ -166,29 +170,51 @@ export class XPostGeneratorCore {
     ];
     const style = styleModifiers[index % styleModifiers.length];
 
+    const topicPrompt = inputs.techTopic ? `\n【注目技術トピック】: ${inputs.techTopic} (このトピックを自然に投稿に含めてください)` : '';
+
     const context = `
       あなたは技術カンファレンス「I/O Extended Tokyo 2026」の参加者です。
-      提供された情報をもとに、X向けの投稿文を作成してください。
+      提供された情報をもとに、X（旧Twitter）向けの日本語の投稿本文を作成してください。
 
       【厳格な制約事項】
-      - 必ず「日本語」で出力してください。
+      - 必ず日本語で出力してください。
       - 本文の最大文字数は「全角${maxBodyLength}文字」以内とします。(絶対厳守)
-      - ハッシュタグや解説、前置きは一切含めず、純粋な「本文」のみを出力してください。
+      - ハッシュタグ、セッション名、URL、解説、前置きは一切含めず、純粋な「本文」のみを出力してください。
       - 表現スタイル: ${style} (絶対厳守)
       - トーン＆マナー: ${personalityMap[inputs.personality]}
       - 投稿の構成: ${situationMap[inputs.situation]}
     `;
 
+    const fewShotExamples = `
+      【出力のルール】
+      ユーザーの感想メモを元に、余計な導入文なしで、以下のフォーマットのように本文だけを1パターン出力してください。
+
+      （例1：事前参加表明の時）
+      「渋谷会場の現地参加枠を確保！Chrome Built-in AIとWebMCPのセッションがめちゃくちゃ楽しみ。最新WebAIを現地でキャッチアップするぞ！」
+
+      （例2：実況時の要約構成）
+      「Gemini NanoのWebブラウザ上でのローカル動作が凄すぎる。サーバーコストゼロかつ超プライバシー保護の設計、Webの未来を感じる！」
+
+      （例3：振り返り時の構造化）
+      「I/O Extended Tokyoに参加！
+      ・WebMCPによるクライアントサイドAI制御が面白い
+      ・Firebase Genkit 2.0での高速開発
+      明日から即プロダクションにマージして試す！」
+    `;
+
     const prompt = `
+      ${fewShotExamples}
+      
       【聴講中のセッション】
       セッション名: ${session.title}
       スピーカー: ${session.speaker}
       概要: ${session.description || ''}
+      ${topicPrompt}
 
       【ユーザーのリアルな感想メモ】
-      ${inputs.feelingAndNotes || '(特になし。セッション名から自動推測して作成してください)'}
+      ${inputs.feelingAndNotes || '(特になし。セッション情報とトーン指示から自動推測して作成してください)'}
 
-      上記の情報を料理して、パッションが伝わる最高の一文（ハッシュタグなし、${maxBodyLength}字以内）を1パターンだけ出力してください。解説や前置きは一切不要です。
+      上記の情報を元に、全角${maxBodyLength}文字以内でパッションが伝わるXの投稿本文（ハッシュタグや解説は一切なし）を1パターン出力してください。
     `;
 
     // Vary temperature slightly per slot based on user selected base temperature (bounded between 0.1 and 2.0)
@@ -244,9 +270,13 @@ export class XPostGeneratorCore {
       throw new Error('LanguageModel is not supported in this browser.');
     }
 
-    // Clean up any stray hashtags the model might have returned, then concat deterministically with session title line
-    const cleanedBody = generatedText.replace(/#\S+/g, '').trim();
-    return cleanedBody + `\n\n- ${session.title}\n#gdgtokyo #ioextended #ChromeBuiltInAIで生成`;
+    // Clean up any stray hashtags and wrapper quotes
+    const cleanedBody = generatedText
+      .replace(/#\S+/g, '')
+      .replace(/^(「|『|")/, '')
+      .replace(/(」|』|")$/, '')
+      .trim();
+    return cleanedBody + fullSuffix;
   }
 
   static async compress(text: string, sessionTitle: string): Promise<string> {
@@ -258,22 +288,22 @@ export class XPostGeneratorCore {
       throw new Error('LanguageModel is not supported in this browser.');
     }
 
-    // Isolate post body by removing the deterministic suffix details
+    // Isolate post body by removing the new deterministic suffix details
     let body = text;
-    const hashtagPattern = /[\s\n]*#gdgtokyo\s*#ioextended\s*#ChromeBuiltInAIで生成$/i;
-    body = body.replace(hashtagPattern, '').trim();
-    
-    // Remove the session title block (e.g. "\n\n- [Session Title]")
     const escapedTitle = sessionTitle.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const sessionSuffixPattern = new RegExp(`[\\s\\n]*-\\s+${escapedTitle}$`, 'i');
-    body = body.replace(sessionSuffixPattern, '').trim();
+    const fullSuffixPattern = new RegExp(`[\\s\\n]*-\\s+${escapedTitle}[\\s\\n]*#gdgtokyo\\s*#ioextended(?:\\s*#GeminiNano)?$`, 'i');
+    body = body.replace(fullSuffixPattern, '').trim();
     
     // Strip any other stray hashtags
     body = body.replace(/#\S+/g, '').trim();
 
-    // Dynamic limit for body compression
-    const baseSuffixLength = 27 + sessionTitle.length;
-    const maxBodyLength = Math.max(30, 140 - (baseSuffixLength + 5));
+    // Check if the original text had #GeminiNano in it
+    const hadMeta = text.includes('#GeminiNano');
+    const baseSuffix = `\n\n- ${sessionTitle}\n#gdgtokyo #ioextended`;
+    const metaSuffix = hadMeta ? ' #GeminiNano' : '';
+    const fullSuffix = baseSuffix + metaSuffix;
+
+    const maxBodyLength = Math.max(30, 140 - (fullSuffix.length + 5));
 
     const context = `
       あなたはプロのSNSライターです。
@@ -307,7 +337,11 @@ export class XPostGeneratorCore {
       const modelSession = await ai.LanguageModel.create(sessionOptions);
       try {
         const result = await modelSession.prompt(prompt);
-        compressedBody = result.trim().replace(/#\S+/g, '').trim();
+        compressedBody = result.trim()
+          .replace(/#\S+/g, '')
+          .replace(/^(「|『|")/, '')
+          .replace(/(」|』|")$/, '')
+          .trim();
       } finally {
         if (typeof modelSession.destroy === 'function') modelSession.destroy();
       }
@@ -315,7 +349,11 @@ export class XPostGeneratorCore {
       const modelSession = await ai.ai.languageModel.create(sessionOptions);
       try {
         const result = await modelSession.prompt(prompt);
-        compressedBody = result.trim().replace(/#\S+/g, '').trim();
+        compressedBody = result.trim()
+          .replace(/#\S+/g, '')
+          .replace(/^(「|『|")/, '')
+          .replace(/(」|』|")$/, '')
+          .trim();
       } finally {
         if (typeof modelSession.destroy === 'function') modelSession.destroy();
       }
@@ -323,7 +361,7 @@ export class XPostGeneratorCore {
       throw new Error('LanguageModel is not supported in this browser.');
     }
 
-    return compressedBody + `\n\n- ${sessionTitle}\n#gdgtokyo #ioextended #ChromeBuiltInAIで生成`;
+    return compressedBody + fullSuffix;
   }
 
   static getXShareUrl(text: string): string {

@@ -1,11 +1,6 @@
 import type { SessionInfo, UserInputs, GeneratorStatus } from '../types';
 
 export class XPostGeneratorCore {
-  static isMobile(): boolean {
-    const ua = navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod|android/.test(ua);
-  }
-
   static normalizeStatus(raw: string): 'available' | 'downloadable' | 'downloading' | 'unavailable' {
     const map: Record<string, 'available' | 'downloadable' | 'downloading' | 'unavailable'> = {
       available:      'available',
@@ -24,10 +19,6 @@ export class XPostGeneratorCore {
   }
 
   static async checkApiAvailability(apiName: 'LanguageModel' | 'Summarizer' | 'LanguageDetector'): Promise<GeneratorStatus> {
-    if (this.isMobile()) {
-      return { status: 'unsupported', error: 'デスクトップ環境（Windows, macOS, Linux, Chromebook）のChromeでのみご利用いただけます。' };
-    }
-
     const ai = (window as any);
     const hasGlobal = apiName in ai;
     const legacyMap: Record<string, string> = {
@@ -155,8 +146,8 @@ export class XPostGeneratorCore {
 
     // Calculate maximum body characters allowed dynamically
     // Suffix: "\n\n- [Session Title]\n#gdgtokyo #ioextended" とトグルのメタタグ
-    const baseSuffix = `\n\n- ${session.title}\n#gdgtokyo #ioextended`;
-    const metaSuffix = inputs.includeMeta ? ' #GeminiNano' : '';
+    const baseSuffix = `\n\n- ${session.title}\n#gdgtokyo`;
+    const metaSuffix = inputs.includeMeta ? ' #ChromeBuiltinAIで生成' : '';
     const fullSuffix = baseSuffix + metaSuffix;
     const maxBodyLength = Math.max(30, 140 - (fullSuffix.length + 5));
 
@@ -288,16 +279,16 @@ export class XPostGeneratorCore {
     // Isolate post body by removing the new deterministic suffix details
     let body = text;
     const escapedTitle = sessionTitle.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const fullSuffixPattern = new RegExp(`[\\s\\n]*-\\s+${escapedTitle}[\\s\\n]*#gdgtokyo\\s*#ioextended(?:\\s*#GeminiNano)?$`, 'i');
+    const fullSuffixPattern = new RegExp(`[\\s\\n]*-\\s+${escapedTitle}[\\s\\n]*#gdgtokyo(?:\\s*#ChromeBuiltinAIで生成)?$`, 'i');
     body = body.replace(fullSuffixPattern, '').trim();
     
     // Strip any other stray hashtags
     body = body.replace(/#\S+/g, '').trim();
 
-    // Check if the original text had #GeminiNano in it
-    const hadMeta = text.includes('#GeminiNano');
-    const baseSuffix = `\n\n- ${sessionTitle}\n#gdgtokyo #ioextended`;
-    const metaSuffix = hadMeta ? ' #GeminiNano' : '';
+    // Check if the original text had #ChromeBuiltinAIで生成 in it
+    const hadMeta = text.includes('#ChromeBuiltinAIで生成');
+    const baseSuffix = `\n\n- ${sessionTitle}\n#gdgtokyo`;
+    const metaSuffix = hadMeta ? ' #ChromeBuiltinAIで生成' : '';
     const fullSuffix = baseSuffix + metaSuffix;
 
     const maxBodyLength = Math.max(30, 140 - (fullSuffix.length + 5));

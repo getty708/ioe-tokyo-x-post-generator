@@ -30,11 +30,72 @@ export const StatusGuard: React.FC<StatusGuardProps> = ({ models, onStartDownloa
     }
   };
 
-  const languageModelReady = models.find(m => m.id === 'LanguageModel')?.status === 'available';
+  const languageModel = models.find(m => m.id === 'LanguageModel');
+  const isUnsupported = languageModel?.status === 'unsupported';
+  const languageModelReady = languageModel?.status === 'available';
+
+  if (isUnsupported) {
+    return (
+      <div className="p-6 md:p-8 max-w-xl mx-auto my-12 bg-white border-thick rounded-xl shadow-neo font-body">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-pastel-red text-google-red flex items-center justify-center font-mono font-bold border-thick shadow-[2px_2px_0px_0px_#1E1E1E] rounded-full mx-auto mb-4 text-2xl">
+            ⚠️
+          </div>
+          <h2 className="text-xl md:text-2xl font-display font-black text-ink">お使いの環境ではご利用いただけません</h2>
+          <p className="text-xs md:text-sm text-ink/75 mt-3 leading-relaxed">
+            本アプリは Google Chrome の実験的機能である <strong>Built-in AI (Gemini Nano)</strong> をブラウザ上で直接動作させるため、現在の環境（モバイルデバイス、非対応ブラウザ、または設定が無効）では動作しません。
+          </p>
+        </div>
+
+        <div className="border-t-2 border-ink/10 pt-5 space-y-4">
+          <h3 className="font-display font-bold text-sm text-ink uppercase tracking-wider">動作要件と有効化の手順</h3>
+          
+          <ul className="space-y-3.5 text-xs text-ink/80 list-none pl-0">
+            <li className="flex items-start gap-2.5">
+              <span className="text-google-red font-bold shrink-0">1.</span>
+              <div>
+                <strong>デスクトップ環境で Chrome を使用する</strong>
+                <p className="text-ink/60 mt-0.5">Windows, macOS, Linux, または Chromebook 上の Google Chrome (v128以上) が必要です（モバイルデバイスや他ブラウザには現在対応していません）。</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-google-red font-bold shrink-0">2.</span>
+              <div>
+                <strong>機能フラグを有効にする</strong>
+                <p className="text-ink/60 mt-0.5">Chrome の URL バーに <code>chrome://flags</code> を入力し、以下の設定を有効にします：</p>
+                <ul className="list-disc pl-5 mt-1 text-ink/70 space-y-1 font-mono text-[10px] md:text-xs">
+                  <li><code>Enables optimization guide on-device model</code> → <strong>Enabled BypassPrefRequirement</strong></li>
+                  <li><code>Prompt API for Gemini Nano</code> → <strong>Enabled</strong></li>
+                </ul>
+              </div>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-google-red font-bold shrink-0">3.</span>
+              <div>
+                <strong>モデルコンポーネントをダウンロードする</strong>
+                <p className="text-ink/60 mt-0.5">設定変更後、Chromeを再起動し、<code>chrome://components</code> にアクセスして <code>Optimization Guide On Device Model</code> を最新の状態にアップデート（ダウンロード）します。</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div className="mt-8 pt-5 border-t border-ink/10 text-center">
+          <a
+            href="https://ioe-tokyo-2026.web.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-display font-bold bg-white text-ink border-2 border-ink rounded-lg shadow-[2px_2px_0px_0px_#1E1E1E] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer"
+          >
+            I/O Extended Tokyo 公式サイトに戻る 🔗
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (!languageModelReady) {
     return (
-      <div className="p-8 max-w-xl mx-auto my-12 bg-white border-thick rounded-xl shadow-neo font-body">
+      <div className="p-6 md:p-8 max-w-xl mx-auto my-12 bg-white border-thick rounded-xl shadow-neo font-body">
         <div className="text-center mb-6">
           <div className="w-12 h-12 bg-google-blue text-white flex items-center justify-center font-mono font-bold border-thick shadow-[2px_2px_0px_0px_#1E1E1E] rounded-full mx-auto mb-4 text-xl">🤖</div>
           <h2 className="text-2xl font-display font-bold text-ink">AIモデルのダウンロード管理</h2>

@@ -285,7 +285,7 @@ export const XPostGenerator: React.FC = () => {
                 {/* Personality */}
                 <div>
                   <label className="block text-sm font-display font-bold text-ink mb-2">ポストの「人格」を選ぶ 🎭</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                     {[
                       { id: 'engineer_logical', label: '💻 ｴﾝｼﾞﾆｱ(要約)', color: 'hover:bg-pastel-blue' },
                       { id: 'engineer_passion', label: '💡 ｴﾝｼﾞﾆｱ(熱量)', color: 'hover:bg-pastel-blue' },
@@ -297,7 +297,7 @@ export const XPostGenerator: React.FC = () => {
                         key={item.id}
                         type="button"
                         onClick={() => setInputs({ ...inputs, personality: item.id as any })}
-                        className={`py-2 px-0.5 text-[10px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
+                        className={`py-2 px-1 text-[11px] md:text-xs font-display font-bold rounded-lg border-2 cursor-pointer transition-all duration-150 ${
                           inputs.personality === item.id 
                             ? 'bg-ink text-white border-ink shadow-[2px_2px_0px_0px_#1E1E1E]' 
                             : `bg-white text-ink border-ink shadow-[2px_2px_0px_0px_#1E1E1E] ${item.color} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0`
@@ -319,7 +319,7 @@ export const XPostGenerator: React.FC = () => {
                     className="w-4 h-4 text-google-blue border-2 border-ink rounded focus:ring-google-blue cursor-pointer"
                   />
                   <label htmlFor="include-meta" className="text-xs md:text-sm font-display font-bold text-ink cursor-pointer select-none">
-                    末尾に WebAI メタ情報ハッシュタグ（#GeminiNano）を含める
+                    ハッシュタグ 「#gdgtokyo #ChromeBuiltinAIで生成」 を追加
                   </label>
                 </div>
 
@@ -463,7 +463,7 @@ export const XPostGenerator: React.FC = () => {
                             <button
                               onClick={() => handleCompress(idx, text)}
                               disabled={compressingIndex === idx}
-                              className="px-3 py-1.5 text-xs font-display font-bold bg-[#E8F0FE] text-google-blue border border-google-blue rounded-lg shadow-[1px_1px_0px_0px_#1a73e8] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1a73e8] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1 shrink-0"
+                              className="flex-1 sm:flex-none justify-center px-3 py-1.5 text-xs font-display font-bold bg-[#E8F0FE] text-google-blue border border-google-blue rounded-lg shadow-[1px_1px_0px_0px_#1a73e8] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1a73e8] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1"
                             >
                               {compressingIndex === idx ? (
                                 <>
@@ -478,7 +478,7 @@ export const XPostGenerator: React.FC = () => {
 
                           <button
                             onClick={() => setEditModes(prev => prev.map((v, k) => k === idx ? !v : v))}
-                            className={`px-3 py-1.5 text-xs font-display font-bold border border-ink rounded-lg transition shadow-[1px_1px_0px_0px_#1E1E1E] cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0 shrink-0 ${
+                            className={`flex-1 sm:flex-none justify-center px-3 py-1.5 text-xs font-display font-bold border border-ink rounded-lg transition shadow-[1px_1px_0px_0px_#1E1E1E] cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0 flex items-center gap-1 ${
                               editModes[idx] 
                                 ? 'bg-ink text-white border-ink' 
                                 : 'bg-white hover:bg-pastel-blue text-ink border-ink'
@@ -489,7 +489,7 @@ export const XPostGenerator: React.FC = () => {
 
                           <button
                             onClick={copyThreadUrl}
-                            className="px-3 py-1.5 text-xs font-display font-bold bg-white text-google-yellow border border-google-yellow rounded-lg transition shadow-[1px_1px_0px_0px_#fbbc05] cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#fbbc05] active:translate-x-0 active:translate-y-0 shrink-0 flex items-center gap-1"
+                            className="flex-grow sm:flex-none justify-center px-3 py-1.5 text-xs font-display font-bold bg-white text-google-yellow border border-google-yellow rounded-lg transition shadow-[1px_1px_0px_0px_#fbbc05] cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#fbbc05] active:translate-x-0 active:translate-y-0 flex items-center gap-1"
                           >
                             <span>スレッドURL 📋</span>
                           </button>
@@ -498,7 +498,7 @@ export const XPostGenerator: React.FC = () => {
                             href={XPostGeneratorCore.getXShareUrl(text)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`px-4 py-1.5 text-xs font-display font-bold rounded-full transition-all flex items-center justify-center gap-1 shrink-0 ${
+                            className={`w-full sm:w-auto justify-center px-4 py-2 text-xs font-display font-bold rounded-full transition-all flex items-center gap-1 ${
                               isOver 
                                 ? 'bg-gray-100 text-gray-400 border border-gray-200 pointer-events-none' 
                                 : 'bg-[#1D9BF0] hover:bg-[#1A8CD8] text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1E1E1E] active:translate-x-0 active:translate-y-0'

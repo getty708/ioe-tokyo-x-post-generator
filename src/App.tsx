@@ -12,23 +12,23 @@ function App() {
             href="https://ioe-tokyo-2026.web.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-display text-xl font-black leading-tight tracking-normal md:text-2xl text-ink hover:opacity-85 transition duration-150 py-1"
+            className="font-display text-lg font-black leading-tight tracking-normal sm:text-xl md:text-2xl text-ink hover:opacity-85 transition duration-150 py-1"
             title="I/O Extended Tokyo 2026 イベントサイトへ"
           >
-            I/O <span className="text-google-blue">Extended Tokyo</span> 2026 - X Post Generator
+            I/O <span className="text-google-blue">Extended Tokyo</span> 2026<span className="hidden sm:inline"> - X Post Generator</span>
           </a>
 
           {/* Navigation Links and On-Device AI badge */}
-          <nav className="flex items-center gap-5">
+          <nav className="flex items-center gap-3 md:gap-5">
             <a
               href="https://ioe-tokyo-2026.web.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-sans text-xs md:text-sm font-bold text-ink/75 hover:text-google-blue transition-colors flex items-center gap-1 hover:underline underline-offset-4 decoration-2"
+              className="font-sans text-xs md:text-sm font-bold text-ink/75 hover:text-google-blue transition-colors hidden sm:flex items-center gap-1 hover:underline underline-offset-4 decoration-2"
             >
-              I/O Extended イベントサイト 🔗
+              イベントサイト 🔗
             </a>
-            <span className="text-[10px] md:text-xs font-mono bg-pastel-green border border-ink/20 text-[#006b2b] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider shrink-0 shadow-[1px_1px_0px_0px_rgba(0,107,43,0.2)]">
+            <span className="text-[10px] md:text-xs font-mono bg-pastel-green border border-ink/20 text-[#006b2b] px-2 py-0.5 md:px-2.5 md:py-1 rounded-full font-bold uppercase tracking-wider shrink-0 shadow-[1px_1px_0px_0px_rgba(0,107,43,0.2)]">
               On-Device AI
             </span>
           </nav>
@@ -59,7 +59,7 @@ function App() {
               <img
                 src="/gdg-tokyo/ioe-tokyo-2026-white.svg"
                 alt="Google I/O Extended Tokyo 2026"
-                className="w-full max-w-[320px] md:max-w-[420px]"
+                className="w-full max-w-[260px] sm:max-w-[320px] md:max-w-[420px]"
               />
               <p className="text-xs text-white/50 font-mono pl-1">
                 Powered by Chrome Built-in AI (Gemini Nano)

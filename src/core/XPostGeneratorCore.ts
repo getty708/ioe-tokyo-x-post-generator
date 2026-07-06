@@ -130,11 +130,11 @@ export class XPostGeneratorCore {
     if (availability.status === 'unsupported') throw new Error(availability.error);
 
     const personalityMap = {
-      engineer_logical: '客観的事実に基づき、知的な表現で簡潔にまとめるロジック重視のエンジニアトーン。感情表現は抑えめで、学びや構成を簡潔に整理します。',
-      engineer_passion: '技術へのリスペクトと熱量を前面に出し、開発者コミュニティで好まれる技術用語やミーム（「完全に理解した」「何もわからない」「チョットデキル」「明日から即マージ」など）を交えた、フランクで熱気のあるトーン。',
-      gal: '「〜じゃん」「〜すぎる」「マジで」などのギャル語尾を使い、最高にテンションが高いトーン。絵文字多め。',
-      hotblooded: '「〜だ！」「熱すぎる！」「最高！」など、パッションと熱血漢溢れる感動MAX of MAXなトーン。',
-      kansai: 'フランクで親しみやすい関西弁（〜やねん、〜やんか、など）で、ユーモアを交えたトーン。'
+      engineer_logical: '客観的事実に基づき、知的な表現で簡潔にまとめるロジック重視のエンジニア。箇条書きやテック絵文字（💻、📊、💡など）を適度に使用し、システマチックで知的なトーンを維持しつつ、無駄な装飾のない短い表現にすること。',
+      engineer_passion: '技術への熱量を持ちつつ、開発者コミュニティの用語やミーム（「完全に理解した」「チョットデキル」「明日から即マージ」など）を自然に1〜2つ織り交ぜたテック系キャラクター。絵文字は1文あたり1個程度に抑え、簡潔にまとめること。',
+      gal: '「〜じゃん」「〜すぎる」「マジで」などのギャル語尾を自然に使いつつ、テンション高く伝えるギャル。絵文字（✨、💖、🥺、🫶など）は適度（1文に1個程度）に留め、文章が長くなりすぎないようにすること。',
+      hotblooded: '「〜だ！」「熱すぎる！」「最高！」など、パッション溢れる熱血なトーン。文末の感嘆符（！）や絵文字（🔥、💪など）は1つに制限し、短く情熱を伝えること。',
+      kansai: '親しみやすい関西弁（〜やねん、〜やで、など）を使う関西人トーン。ユーモアを交えつつ、絵文字（🤣、🐙など）は最小限（1文に1個程度）にして、短くまとめること。'
     };
 
     const situationMap = {
@@ -150,28 +150,31 @@ export class XPostGeneratorCore {
     const metaSuffix = inputs.includeMeta ? ' #ChromeBuiltinAIで生成' : '';
     const fullSuffix = baseSuffix + metaSuffix;
     const maxBodyLength = Math.max(30, 140 - (fullSuffix.length + 5));
+    // Target length for AI with a safety buffer of 15 characters to avoid violation
+    const targetLength = Math.max(25, maxBodyLength - 15);
 
     // Slot-specific prompt modifiers to diverge generated contents
     const styleModifiers = [
-      `非常に短く、要点だけを1行で伝えるトーン（全角30〜${Math.min(50, maxBodyLength)}文字程度）`,
-      `フランクでキャッチーなSNSトーン（全角50〜${Math.min(70, maxBodyLength)}文字程度）`,
-      `セッション内容を補足する少し説明的なトーン（全角70〜${Math.min(90, maxBodyLength)}文字程度）`,
-      `熱意や学びを込めたパッション重視の長めの文面（全角80〜${maxBodyLength}文字程度）`,
-      `他の参加者の共感を誘う親しみやすいトーン（全角70〜${maxBodyLength}文字程度）`
+      `非常に短く、要点だけを1行で伝えるトーン（全角20〜${Math.min(35, targetLength)}文字程度）`,
+      `フランクでキャッチーなSNSトーン（全角30〜${Math.min(45, targetLength)}文字程度）`,
+      `セッション内容を補足する少し説明的なトーン（全角40〜${Math.min(55, targetLength)}文字程度）`,
+      `熱意や学びを込めたパッション重視の文面（全角50〜${Math.min(65, targetLength)}文字程度）`,
+      `他の参加者の共感を誘う親しみやすいトーン（全角45〜${Math.min(60, targetLength)}文字程度）`
     ];
     const style = styleModifiers[index % styleModifiers.length];
 
     const context = `
-      あなたは技術カンファレンス「I/O Extended Tokyo 2026」の参加者です。
+      あなたは技術カンファレンス「I/O Extended Tokyo 2026」の参加者になりきったAIキャラクターです。
       提供された情報をもとに、X（旧Twitter）向けの日本語の投稿本文を作成してください。
 
       【厳格な制約事項】
       - 必ず日本語で出力してください。
-      - 本文の最大文字数は「全角${maxBodyLength}文字」以内とします。(絶対厳守)
+      - 本文の最大文字数は「全角${targetLength}文字」以内とします。(絶対厳守・超過厳禁)
       - ハッシュタグ、セッション名、URL、解説、前置きは一切含めず、純粋な「本文」のみを出力してください。
       - 表現スタイル: ${style} (絶対厳守)
-      - トーン＆マナー: ${personalityMap[inputs.personality]}
+      - トーン＆マナー: ${personalityMap[inputs.personality]} (指定された人格設定を適度に保ちつつ、文章の簡潔さを最優先すること)
       - 投稿の構成: ${situationMap[inputs.situation]}
+      - 絵文字の制限: 絵文字は各文に1〜2個程度に制限し、文章の読みやすさと簡潔さを最優先してください。(絶対厳守)
     `;
 
     const fewShotExamples = `
@@ -179,10 +182,10 @@ export class XPostGeneratorCore {
       ユーザーの感想メモを元に、余計な導入文なしで、以下のフォーマットのように本文だけを1パターン出力してください。
 
       （例1：事前参加表明の時）
-      「渋谷会場の現地参加枠を確保！Chrome Built-in AIとWebMCPのセッションがめちゃくちゃ楽しみ。最新WebAIを現地でキャッチアップするぞ！」
+      「渋谷会場の現地参加枠を確保！🔥 Chrome Built-in AIとWebMCPのセッションが楽しみすぎる！🚀 最新WebAIを現地でキャッチアップするぞ💻✨」
 
       （例2：実況時の要約構成）
-      「Gemini NanoのWebブラウザ上でのローカル動作が凄すぎる。サーバーコストゼロかつ超プライバシー保護の設計、Webの未来を感じる！」
+      「Gemini Nanoのブラウザローカル動作が凄すぎる！🤖 サーバーコストゼロ＆超プライバシー保護、Webの未来を感じるぜ！✨💡」
 
       （例3：振り返り時の構造化）
       「I/O Extended Tokyoに参加！
@@ -202,7 +205,7 @@ export class XPostGeneratorCore {
       【ユーザーのリアルな感想メモ】
       ${inputs.feelingAndNotes || '(特になし。セッション情報とトーン指示から自動推測して作成してください)'}
 
-      上記の情報を元に、全角${maxBodyLength}文字以内でパッションが伝わるXの投稿本文（ハッシュタグや解説は一切なし）を1パターン出力してください。
+      上記の情報を元に、全角${targetLength}文字以内で簡潔にパッションが伝わるXの投稿本文（ハッシュタグや解説は一切なし）を1パターン出力してください。
     `;
 
     // Vary temperature slightly per slot based on user selected base temperature (bounded between 0.1 and 2.0)
@@ -354,5 +357,34 @@ export class XPostGeneratorCore {
 
   static getXShareUrl(text: string): string {
     return `https://x.com/intent/post?text=${encodeURIComponent(text)}`;
+  }
+
+  static countXTextLength(text: string): number {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      const segmenter = new Intl.Segmenter('ja', { granularity: 'grapheme' });
+      let length = 0;
+      for (const { segment } of segmenter.segment(text)) {
+        const code = segment.charCodeAt(0);
+        if (code >= 0 && code <= 0xff) {
+          length += 0.5;
+        } else {
+          length += 1;
+        }
+      }
+      return Math.ceil(length);
+    }
+    let length = 0;
+    for (let i = 0; i < text.length; i++) {
+      const code = text.charCodeAt(i);
+      if (0xd800 <= code && code <= 0xdbff) {
+        i++;
+        length += 1;
+      } else if (code >= 0 && code <= 0xff) {
+        length += 0.5;
+      } else {
+        length += 1;
+      }
+    }
+    return Math.ceil(length);
   }
 }

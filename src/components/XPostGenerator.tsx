@@ -396,7 +396,7 @@ export const XPostGenerator: React.FC = () => {
                 
                 if (isGenerated) {
                   const text = candidates[idx];
-                  const charCount = text.length;
+                  const charCount = XPostGeneratorCore.countXTextLength(text);
                   const isOver = charCount > 140;
 
                   return (
